@@ -2,143 +2,65 @@
 
 # Install some stuff before others!
 important_casks=(
-  authy
-  dropbox
   #google-chrome
-  hyper
-  jetbrains-toolbox
   istat-menus
-  #spotify
   visual-studio-code
-  slack
 )
 
-brews=(
-  xonsh
-  jabba
+brews=(  
   awscli
-  "bash-snippets --without-all-tools --with-cryptocurrency --with-stocks --with-weather"
   bat
-  #cheat
-  coreutils
-  dfc
-  exa
-  findutils
-  "fontconfig --universal"
-  fpp
-  github/gh/gh
+  ffmpeg
   git
-  git-extras
-  git-fresh
-  git-lfs
-  "gnuplot --with-qt"
-  "gnu-sed --with-default-names"
-  go
-  gpg
-  haskell-stack
-  hh
-  #hosts
   htop
   httpie
   iftop
   "imagemagick --with-webp"
-  lighttpd
-  lnav
   m-cli
-  mackup
-  macvim
-  #mas
-  micro
-  moreutils
-  mtr
+  mas
+  mediainfo
   ncdu
   neofetch
   nmap  
   node
-  poppler
-  postgresql
-  pgcli
-  pv
-  python
   python3
-  osquery
   ruby
-  scala
-  sbt
-  shellcheck
-  stormssh
-  teleport
-  thefuck
-  tmux
+  streamlink
   tree
   trash
   "vim --with-override-system-vi"
-  #volumemixer
   "wget --with-iri"
-  xsv
+  yarn
   youtube-dl
 )
 
 casks=(
   aerial
-  adobe-acrobat-pro
-  airdroid
-  android-platform-tools
-  cakebrew
-  cleanmymac
   docker
-  expressvpn
   firefox
   geekbench
-  google-backup-and-sync
   github
   handbrake
   iina
-  istat-server  
-  launchrocket
-  kap-beta
   qlcolorcode
   qlmarkdown
   qlstephen
   quicklook-json
   quicklook-csv
-  macdown
-  #muzzle
-  plex-media-player
-  plex-media-server
-  private-eye
-  satellite-eyes
-  sidekick
-  skype
-  sloth
-  steam
-  synergy
+  rectangle
   transmission
-  transmission-remote-gui
-  xquartz
 )
 
 pips=(
   pip
-  glances
-  ohmu
-  pythonpy
-)
-
-gems=(
-  bundler
-  travis
+  instaloader
 )
 
 npms=(
-  fenix-cli
-  gitjk
-  kill-tabs
-  n
+  gatsby-cli
 )
 
-gpg_key='3E219504'
-git_email='pathikritbhowmick@msn.com'
+git_email='joseph@anguiano.me'
 git_configs=(
   "branch.autoSetupRebase always"
   "color.ui auto"
@@ -151,25 +73,18 @@ git_configs=(
   "rerere.autoUpdate true"
   "remote.origin.prune true"
   "rerere.enabled true"
-  "user.name pathikrit"
+  "user.name josephanguiano"
   "user.email ${git_email}"
-  "user.signingkey ${gpg_key}"
 )
 
 vscode=(
-  alanz.vscode-hie-server
-  rebornix.Ruby
-  redhat.java
-  rust-lang.rust
-  scalameta.metals
+  ms-azuretools.vscode-docker
+  esbenp.prettier-vscode
 )
 
 fonts=(
-  font-fira-code
-  font-source-code-pro
+  font-hack
 )
-
-JDK_VERSION=amazon-corretto@1.8.222-10.1
 
 ######################################## End of app list ########################################
 set +e
@@ -232,18 +147,12 @@ fi
 export HOMEBREW_NO_AUTO_UPDATE=1
 
 echo "Install important software ..."
-brew tap caskroom/versions
+brew tap homebrew/cask-versions
 install 'brew cask install' "${important_casks[@]}"
 
 prompt "Install packages"
 install 'brew_install_or_upgrade' "${brews[@]}"
 brew link --overwrite ruby
-
-prompt "Install JDK=${JDK_VERSION}"
-curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
-jabba install ${JDK_VERSION}
-jabba alias default ${JDK_VERSION}
-java -version
 
 prompt "Set git defaults"
 for config in "${git_configs[@]}"
@@ -251,39 +160,11 @@ do
   git config --global ${config}
 done
 
-if [[ -z "${CI}" ]]; then
-  gpg --keyserver hkp://pgp.mit.edu --recv ${gpg_key}
-  prompt "Export key to Github"
-  ssh-keygen -t rsa -b 4096 -C ${git_email}
-  pbcopy < ~/.ssh/id_rsa.pub
-  open https://github.com/settings/ssh/new
-fi  
-
-prompt "Upgrade bash"
-brew install bash bash-completion2 fzf
-sudo bash -c "echo $(brew --prefix)/bin/bash >> /private/etc/shells"
-#sudo chsh -s "$(brew --prefix)"/bin/bash
-# Install https://github.com/twolfson/sexy-bash-prompt
-touch ~/.bash_profile #see https://github.com/twolfson/sexy-bash-prompt/issues/51
-(cd /tmp && git clone --depth 1 --config core.autocrlf=false https://github.com/twolfson/sexy-bash-prompt && cd sexy-bash-prompt && make install) && source ~/.bashrc
-
-echo "
-alias del='mv -t ~/.Trash/'
-alias ls='exa -l'
-alias cat=bat
-" >> ~/.bash_profile
-
-prompt "Setting up xonsh"
-sudo bash -c "which xonsh >> /private/etc/shells"
-sudo chsh -s $(which xonsh)
-echo "source-bash --overwrite-aliases ~/.bash_profile" >> ~/.xonshrc
-
 prompt "Install software"
 install 'brew cask install' "${casks[@]}"
 
 prompt "Install secondary packages"
 install 'pip3 install --upgrade' "${pips[@]}"
-install 'gem install' "${gems[@]}"
 install 'npm install --global' "${npms[@]}"
 install 'code --install-extension' "${vscode[@]}"
 brew tap caskroom/fonts
@@ -302,7 +183,5 @@ fi
 
 prompt "Cleanup"
 brew cleanup
-brew cask cleanup
 
-echo "Run [mackup restore] after DropBox has done syncing ..."
 echo "Done!"
