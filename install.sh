@@ -2,8 +2,7 @@
 
 # Install some stuff before others!
 important_casks=(
-  #google-chrome
-  istat-menus
+  google-chrome
   visual-studio-code
 )
 
@@ -32,6 +31,7 @@ brews=(
   "wget --with-iri"
   yarn
   youtube-dl
+  zsh
 )
 
 casks=(
@@ -167,7 +167,7 @@ prompt "Install secondary packages"
 install 'pip3 install --upgrade' "${pips[@]}"
 install 'npm install --global' "${npms[@]}"
 install 'code --install-extension' "${vscode[@]}"
-brew tap caskroom/fonts
+brew tap homebrew/cask-fonts
 install 'brew cask install' "${fonts[@]}"
 
 prompt "Update packages"
